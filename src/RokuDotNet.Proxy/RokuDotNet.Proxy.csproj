@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">0.2</AssemblyVersion>
+    <PackageVersion Condition="'$(PackageVersion)' == ''">$(AssemblyVersion).0</PackageVersion>
+    <AssemblyFileVersion Condition="'$(AssemblyFileVersion)' == ''">$(PackageVersion)</AssemblyFileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>RokuDotNet.Proxy</PackageId>
+    <Authors>Phillip Hoff</Authors>
+    <Title>.NET Proxy for Roku Devices</Title>
+    <PackageDescription>A .NET proxy for Roku devices.</PackageDescription>
+    <Copyright>Copyright (c) 2018 Phillip Hoff. All rights reserved.</Copyright>
+    <PackageLicenseUrl>https://github.com/philliphoff/RokuDotNet/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageTags>roku</PackageTags>
+    <PackageProjectUrl>https://github.com/philliphoff/RokuDotNet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/philliphoff/RokuDotNet</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryBranch>master</RepositoryBranch>
+  </PropertyGroup>
+
+  <ItemGroup>
+      <PackageReference Include="MQTTnet" Version="2.7.5" />
+      <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+      <PackageReference Include="RokuDotNet.Client" Version="0.5.0" />
+  </ItemGroup>
+
+</Project>
