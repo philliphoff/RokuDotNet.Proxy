@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MQTTnet;
 using MQTTnet.Client;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace RokuDotNet.Proxy.Mqtt
 {
@@ -22,7 +23,7 @@ namespace RokuDotNet.Proxy.Mqtt
 
         #region IRokuRpc Members
 
-        public async Task<T> InvokeMethodAsync<T>(string deviceId, string methodName, CancellationToken cancellationToken)
+        public async Task<T> InvokeMethodAsync<TMessagePayload, T>(string deviceId, string methodName, TMessagePayload payload, CancellationToken cancellationToken)
         {
             var factory = new MqttFactory();
             
@@ -47,23 +48,20 @@ namespace RokuDotNet.Proxy.Mqtt
                 client.ApplicationMessageReceived += (s, e) =>
                 {
                     string invocationResponseString = e.ApplicationMessage.ConvertPayloadToString();
-                    var invocationResponse = JsonConvert.DeserializeObject(invocationResponseString);
-                    T invocationResponsePayload = default(T); // TODO
-                    tcs.TrySetResult(invocationResponsePayload);
+                    var invocationResponse = JsonConvert.DeserializeObject<MethodInvocationResponse>(invocationResponseString);
+                    tcs.TrySetResult(invocationResponse.Payload.ToObject<T>());
                 };
 
                 await client.ConnectAsync(options).ConfigureAwait(false);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                string invocationPayload = "TODO";
-
                 string invocationString = JsonConvert.SerializeObject(
                     new MqttMethodInvocation
                     {
                         DeviceId = deviceId,
                         MethodName = methodName,
-                        Payload = invocationPayload,
+                        Payload = JToken.FromObject(payload),
                         ResponseTopic = responseTopic
                     });
 

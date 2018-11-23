@@ -42,7 +42,7 @@ namespace RokuDotNet.Proxy
 
         Task<GetAppsResult> IRokuDeviceQuery.GetAppsAsync(CancellationToken cancellationToken)
         {
-            return this.rpc.InvokeMethodAsync<GetAppsResult>(this.Id, "query/apps", cancellationToken);
+            return this.rpc.InvokeMethodAsync<object, GetAppsResult>(this.Id, "query/apps", new Object(), cancellationToken);
         }
 
         Task<DeviceInfo> IRokuDeviceQuery.GetDeviceInfoAsync(CancellationToken cancellationToken)

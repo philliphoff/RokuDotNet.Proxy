@@ -36,7 +36,7 @@ namespace RokuDotNet.Proxy.Mqtt
                     {
                         var factory = new MqttFactory();
 
-                        var client = factory.CreateMqttClient();
+                        this.mqttClient = factory.CreateMqttClient();
 
                         var options = new MqttClientOptionsBuilder()
                             .WithTcpServer("localhost", 1883)
@@ -44,16 +44,16 @@ namespace RokuDotNet.Proxy.Mqtt
 
                         var tcs = new TaskCompletionSource<bool>();
 
-                        client.Connected += async (s, e) =>
+                        this.mqttClient.Connected += async (s, e) =>
                         {
-                            client.ApplicationMessageReceived += this.OnApplicationMessageReceived;
+                            this.mqttClient.ApplicationMessageReceived += this.OnApplicationMessageReceived;
 
-                            await client.SubscribeAsync(new TopicFilterBuilder().WithTopic($"roku/devices/{this.deviceId}").Build()).ConfigureAwait(false);
+                            await this.mqttClient.SubscribeAsync(new TopicFilterBuilder().WithTopic($"roku/devices/{this.deviceId}").Build()).ConfigureAwait(false);
                         
                             tcs.TrySetResult(true);
                         };
 
-                        await client.ConnectAsync(options).ConfigureAwait(false);
+                        await this.mqttClient.ConnectAsync(options).ConfigureAwait(false);
 
                         await tcs.Task.ConfigureAwait(false);
                     }

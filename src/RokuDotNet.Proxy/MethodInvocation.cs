@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace RokuDotNet.Proxy
 {
@@ -11,6 +12,6 @@ namespace RokuDotNet.Proxy
         public string MethodName { get; set; }
 
         [JsonProperty("payload")]
-        public string Payload { get; set; }
+        public JToken Payload { get; set; }
     }
 }

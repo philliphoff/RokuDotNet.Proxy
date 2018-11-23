@@ -5,6 +5,6 @@ namespace RokuDotNet.Proxy
 {
     public interface IRokuRpcClient
     {
-        Task<T> InvokeMethodAsync<T>(string deviceId, string methodName, CancellationToken cancellationToken = default(CancellationToken));
+        Task<TMethodResponsePayload> InvokeMethodAsync<TMethodPayload, TMethodResponsePayload>(string deviceId, string methodName, TMethodPayload payload, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
