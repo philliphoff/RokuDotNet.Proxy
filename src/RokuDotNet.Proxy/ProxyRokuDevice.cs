@@ -32,12 +32,12 @@ namespace RokuDotNet.Proxy
 
         Task<GetActiveAppResult> IRokuDeviceQuery.GetActiveAppAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return this.rpc.InvokeMethodAsync<object, GetActiveAppResult>(this.Id, "query/active-app", new Object(), cancellationToken);
         }
 
         Task<GetActiveTvChannelResult> IRokuDeviceQuery.GetActiveTvChannelAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return this.rpc.InvokeMethodAsync<object, GetActiveTvChannelResult>(this.Id, "query/tv-active-channel", new Object(), cancellationToken);
         }
 
         Task<GetAppsResult> IRokuDeviceQuery.GetAppsAsync(CancellationToken cancellationToken)
@@ -47,12 +47,12 @@ namespace RokuDotNet.Proxy
 
         Task<DeviceInfo> IRokuDeviceQuery.GetDeviceInfoAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return this.rpc.InvokeMethodAsync<object, DeviceInfo>(this.Id, "query/device-info", new Object(), cancellationToken);
         }
 
         Task<GetTvChannelsResult> IRokuDeviceQuery.GetTvChannelsAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return this.rpc.InvokeMethodAsync<object, GetTvChannelsResult>(this.Id, "query/tv-channels", new Object(), cancellationToken);
         }
 
         #endregion
@@ -61,32 +61,32 @@ namespace RokuDotNet.Proxy
 
         Task IRokuDeviceInput.KeyDownAsync(SpecialKeys key, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return this.rpc.InvokeMethodAsync<string, object>(this.Id, "keydown/key", key.ToString(), cancellationToken);
         }
 
         Task IRokuDeviceInput.KeyDownAsync(char key, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return this.rpc.InvokeMethodAsync<string, object>(this.Id, "keydown/key", key.ToString(), cancellationToken);
         }
 
         Task IRokuDeviceInput.KeyPressAsync(SpecialKeys key, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return this.rpc.InvokeMethodAsync<string, object>(this.Id, "keypress/key", key.ToString(), cancellationToken);
         }
 
         Task IRokuDeviceInput.KeyPressAsync(char key, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return this.rpc.InvokeMethodAsync<string, object>(this.Id, "keypress/key", key.ToString(), cancellationToken);
         }
 
         Task IRokuDeviceInput.KeyUpAsync(SpecialKeys key, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return this.rpc.InvokeMethodAsync<string, object>(this.Id, "keyup/key", key.ToString(), cancellationToken);
         }
 
         Task IRokuDeviceInput.KeyUpAsync(char key, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return this.rpc.InvokeMethodAsync<string, object>(this.Id, "keyup/key", key.ToString(), cancellationToken);
         }
 
         #endregion
@@ -98,15 +98,5 @@ namespace RokuDotNet.Proxy
         }
 
         #endregion
-    }
-
-    public sealed class RokuCommand
-    {
-        public string Command { get; set; }
-    }
-
-    public sealed class RokuCommandResponse
-    {
-        public string Response { get; set; }
     }
 }

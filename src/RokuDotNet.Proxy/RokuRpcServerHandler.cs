@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -8,6 +9,14 @@ namespace RokuDotNet.Proxy
 {
     public sealed class RokuRpcServerHandler : IRokuRpcServerHandler
     {
+        private delegate Task<object> HandlerFunc(MethodInvocation invocation, IRokuDevice device, CancellationToken cancellationToken);
+
+        private static readonly IDictionary<string, HandlerFunc> handlers = new Dictionary<string, HandlerFunc>
+        {
+            { "query/active-app", (invocation, device, cancellationToken) => { return device.Query.GetActiveAppAsync().ToTaskObject(); } },
+            { "query/apps", (invocation, device, cancellationToken) => { return device.Query.GetAppsAsync().ToTaskObject(); } }
+        };
+
         private readonly Func<string, Task<IRokuDevice>> deviceMapFunc;
 
         public RokuRpcServerHandler(Func<string, Task<IRokuDevice>> deviceMapFunc)
@@ -17,34 +26,23 @@ namespace RokuDotNet.Proxy
 
         #region IRokuRpcServerHandler Members
 
-        public Task<MethodInvocationResponse> HandleMethodInvocationAsync(MethodInvocation invocation, CancellationToken cancellationToken)
+        public async Task<MethodInvocationResponse> HandleMethodInvocationAsync(MethodInvocation invocation, CancellationToken cancellationToken)
         {
-            switch (invocation.MethodName)
+            if (handlers.TryGetValue(invocation.MethodName, out HandlerFunc handler))
             {
-                case "query/apps":
+                var device = await this.deviceMapFunc(invocation.DeviceId).ConfigureAwait(false);
 
-                    return OnQueryApps(invocation, cancellationToken);
+                var result = await handler(invocation, device, cancellationToken).ConfigureAwait(false);
 
-                default:
-
-                    break; 
+                return new MethodInvocationResponse
+                {
+                    Payload = JToken.FromObject(result)
+                };
             }
 
             throw new NotImplementedException();
         }
 
         #endregion
-
-        private async Task<MethodInvocationResponse> OnQueryApps(MethodInvocation invocation, CancellationToken cancellationToken)
-        {
-            var device = await this.deviceMapFunc(invocation.DeviceId);
-
-            var result = await device.Query.GetAppsAsync(cancellationToken);
-
-            return new MethodInvocationResponse
-            {
-                Payload = JToken.FromObject(result)
-            };
-        }
     }
 }
