@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using RokuDotNet.Client;
+using RokuDotNet.Client.Input;
 
 namespace RokuDotNet.Proxy
 {
@@ -13,13 +14,37 @@ namespace RokuDotNet.Proxy
 
         private static readonly IDictionary<string, HandlerFunc> handlers = new Dictionary<string, HandlerFunc>
         {
-            { "query/active-app", (invocation, device, cancellationToken) => { return device.Query.GetActiveAppAsync().ToTaskObject(); } },
-            { "query/apps", (invocation, device, cancellationToken) => { return device.Query.GetAppsAsync().ToTaskObject(); } }
+            { "query/active-app",           (invocation, device, cancellationToken) => device.Query.GetActiveAppAsync(cancellationToken).ToTaskObject() },
+            { "query/apps",                 (invocation, device, cancellationToken) => device.Query.GetAppsAsync(cancellationToken).ToTaskObject() },
+            { "query/device-info",          (invocation, device, cancellationToken) => device.Query.GetDeviceInfoAsync(cancellationToken).ToTaskObject() },
+            { "query/tv-active-channel",    (invocation, device, cancellationToken) => device.Query.GetActiveTvChannelAsync(cancellationToken).ToTaskObject() },
+            { "query/tv-channels",          (invocation, device, cancellationToken) => device.Query.GetTvChannelsAsync(cancellationToken).ToTaskObject() },
+
+            { "keydown/key",    OnKeyMethod(device => device.Input.KeyDownAsync, device => device.Input.KeyDownAsync) },
+            { "keypress/key",   OnKeyMethod(device => device.Input.KeyPressAsync, device => device.Input.KeyPressAsync) },
+            { "keyup/key",      OnKeyMethod(device => device.Input.KeyUpAsync, device => device.Input.KeyUpAsync) }
         };
 
-        private readonly Func<string, Task<IRokuDevice>> deviceMapFunc;
+        private static HandlerFunc OnKeyMethod(Func<IRokuDevice, Func<SpecialKeys, CancellationToken, Task>> specialKeyFunc, Func<IRokuDevice, Func<char, CancellationToken, Task>> charFunc)
+        {
+            return (invocation, device, cancellationToken) =>
+            {
+                string keyString = (string)invocation.Payload;
+        
+                if (Enum.TryParse<SpecialKeys>(keyString, out SpecialKeys key))
+                {
+                    return specialKeyFunc(device).Invoke(key, cancellationToken).ToTaskObject();
+                }
+                else
+                {
+                    return charFunc(device).Invoke(keyString[0], cancellationToken).ToTaskObject();
+                }
+            };
+        }
 
-        public RokuRpcServerHandler(Func<string, Task<IRokuDevice>> deviceMapFunc)
+        private readonly Func<string, CancellationToken, Task<IRokuDevice>> deviceMapFunc;
+
+        public RokuRpcServerHandler(Func<string, CancellationToken, Task<IRokuDevice>> deviceMapFunc)
         {
             this.deviceMapFunc = deviceMapFunc ?? throw new ArgumentNullException(nameof(deviceMapFunc));
         }
@@ -30,7 +55,7 @@ namespace RokuDotNet.Proxy
         {
             if (handlers.TryGetValue(invocation.MethodName, out HandlerFunc handler))
             {
-                var device = await this.deviceMapFunc(invocation.DeviceId).ConfigureAwait(false);
+                var device = await this.deviceMapFunc(invocation.DeviceId, cancellationToken).ConfigureAwait(false);
 
                 var result = await handler(invocation, device, cancellationToken).ConfigureAwait(false);
 
