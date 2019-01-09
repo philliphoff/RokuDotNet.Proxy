@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RokuDotNet.Proxy\RokuDotNet.Proxy.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <PackageReference Include="Moq" Version="4.10.1" />
+      <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+      <PackageReference Include="RokuDotNet.Client" Version="0.7.0" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
+      <PackageReference Include="xunit" Version="2.3.1" />
+      <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+      <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+  </ItemGroup>
+
+</Project>
