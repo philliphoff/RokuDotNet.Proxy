@@ -29,7 +29,7 @@ namespace RokuDotNet.Proxy
 
         #endregion
 
-        #region IRokuDeviceInput Members
+        #region IRokuDeviceQuery Members
 
         Task<GetActiveAppResult> IRokuDeviceQuery.GetActiveAppAsync(CancellationToken cancellationToken)
         {
@@ -58,7 +58,7 @@ namespace RokuDotNet.Proxy
 
         #endregion
 
-        #region IRokuDeviceQuery Members
+        #region IRokuDeviceInput Members
 
         Task IRokuDeviceInput.KeyDownAsync(SpecialKeys key, CancellationToken cancellationToken)
         {
