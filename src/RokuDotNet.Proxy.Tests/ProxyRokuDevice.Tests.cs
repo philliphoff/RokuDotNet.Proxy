@@ -116,7 +116,7 @@ namespace RokuDotNet.Proxy.Tests
 
             var actualResult = await methodFunc(device);
 
-            Assert.Same(expectedResult, actualResult);
+            Assert.Equal(expectedResult, actualResult);
         }
     }
 }

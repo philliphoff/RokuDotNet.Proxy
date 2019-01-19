@@ -69,7 +69,7 @@ namespace RokuDotNet.Proxy
 
         #region IRokuRpcServerHandler Members
 
-        public async Task<MethodInvocationResponse> HandleMethodInvocationAsync(MethodInvocation invocation, CancellationToken cancellationToken)
+        public async Task<MethodInvocationResponse> HandleMethodInvocationAsync(MethodInvocation invocation, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (handlers.TryGetValue(invocation.MethodName, out HandlerFunc handler))
             {
