@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -22,8 +23,25 @@ namespace RokuDotNet.Proxy
 
             { "keydown/key",    OnKeyMethod(device => device.Input.KeyDownAsync, device => device.Input.KeyDownAsync) },
             { "keypress/key",   OnKeyMethod(device => device.Input.KeyPressAsync, device => device.Input.KeyPressAsync) },
-            { "keyup/key",      OnKeyMethod(device => device.Input.KeyUpAsync, device => device.Input.KeyUpAsync) }
+            { "keyup/key",      OnKeyMethod(device => device.Input.KeyUpAsync, device => device.Input.KeyUpAsync) },
+
+            { "keypress/keys/literal", OnLiteralKeysMethod },
+            { "keypress/keys/special", OnSpecialKeysMethod }
         };
+
+        private static Task<object> OnLiteralKeysMethod(MethodInvocation invocation, IRokuDevice device, CancellationToken cancellationToken)
+        {
+            var keys = invocation.Payload.Values<string>().Select(keyString => keyString[0]).ToArray();
+
+            return device.Input.KeyPressAsync(keys, cancellationToken).ToTaskObject();
+        }
+
+        private static Task<object> OnSpecialKeysMethod(MethodInvocation invocation, IRokuDevice device, CancellationToken cancellationToken)
+        {
+            var keys = invocation.Payload.Values<string>().Select(keyString => (SpecialKeys)Enum.Parse(typeof(SpecialKeys), keyString)).ToArray();
+
+            return device.Input.KeyPressAsync(keys, cancellationToken).ToTaskObject();
+        }
 
         private static HandlerFunc OnKeyMethod(Func<IRokuDevice, Func<SpecialKeys, CancellationToken, Task>> specialKeyFunc, Func<IRokuDevice, Func<char, CancellationToken, Task>> charFunc)
         {
@@ -51,7 +69,7 @@ namespace RokuDotNet.Proxy
 
         #region IRokuRpcServerHandler Members
 
-        public async Task<MethodInvocationResponse> HandleMethodInvocationAsync(MethodInvocation invocation, CancellationToken cancellationToken)
+        public async Task<MethodInvocationResponse> HandleMethodInvocationAsync(MethodInvocation invocation, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (handlers.TryGetValue(invocation.MethodName, out HandlerFunc handler))
             {

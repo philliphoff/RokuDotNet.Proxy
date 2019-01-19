@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using RokuDotNet.Client;
@@ -28,7 +29,7 @@ namespace RokuDotNet.Proxy
 
         #endregion
 
-        #region IRokuDeviceInput Members
+        #region IRokuDeviceQuery Members
 
         Task<GetActiveAppResult> IRokuDeviceQuery.GetActiveAppAsync(CancellationToken cancellationToken)
         {
@@ -57,7 +58,7 @@ namespace RokuDotNet.Proxy
 
         #endregion
 
-        #region IRokuDeviceQuery Members
+        #region IRokuDeviceInput Members
 
         Task IRokuDeviceInput.KeyDownAsync(SpecialKeys key, CancellationToken cancellationToken)
         {
@@ -74,9 +75,19 @@ namespace RokuDotNet.Proxy
             return this.rpc.InvokeMethodAsync<string, object>(this.Id, "keypress/key", key.ToString(), cancellationToken);
         }
 
+        Task IRokuDeviceInput.KeyPressAsync(SpecialKeys[] keys, CancellationToken cancellationToken)
+        {
+            return this.rpc.InvokeMethodAsync<string[], object>(this.Id, "keypress/keys/special", keys.Select(key => key.ToString()).ToArray(), cancellationToken);
+        }
+
         Task IRokuDeviceInput.KeyPressAsync(char key, CancellationToken cancellationToken)
         {
             return this.rpc.InvokeMethodAsync<string, object>(this.Id, "keypress/key", key.ToString(), cancellationToken);
+        }
+
+        Task IRokuDeviceInput.KeyPressAsync(char[] keys, CancellationToken cancellationToken)
+        {
+            return this.rpc.InvokeMethodAsync<string[], object>(this.Id, "keypress/keys/literal", keys.Select(key => key.ToString()).ToArray(), cancellationToken);
         }
 
         Task IRokuDeviceInput.KeyUpAsync(SpecialKeys key, CancellationToken cancellationToken)

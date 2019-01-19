@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">0.1</AssemblyVersion>
+    <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">0.2</AssemblyVersion>
     <PackageVersion Condition="'$(PackageVersion)' == ''">$(AssemblyVersion).0</PackageVersion>
     <AssemblyFileVersion Condition="'$(AssemblyFileVersion)' == ''">$(PackageVersion)</AssemblyFileVersion>
   </PropertyGroup>
@@ -31,7 +31,7 @@
 
   <ItemGroup>
       <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-      <PackageReference Include="RokuDotNet.Client" Version="0.5.0" />
+      <PackageReference Include="RokuDotNet.Client" Version="0.7.0" />
   </ItemGroup>
 
 </Project>
